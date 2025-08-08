@@ -1,3 +1,6 @@
+import { Payments } from "./payments.js";
+import { UpfrontPayments } from "./upfront-payments.js";
+
 class Rate {
   constructor(
     public threshold: number,
@@ -25,6 +28,10 @@ class Tax {
   asNumber() {
     return this.amount;
   }
+
+  deduce(upfrontPayment: UpfrontPayments) {
+    this.amount -= upfrontPayment.asNumber();
+  }
 }
 
 class Income {
@@ -51,8 +58,14 @@ export class TaxCalculator {
     new Rate(10_000, 0.1),
   ];
 
-  calculate(income: number) {
-    const incomeObj = new Income(income);
+  private readonly payments: Payments;
+
+  constructor({ payments }: { payments: Payments }) {
+    this.payments = payments;
+  }
+
+  calculate({ userId, paySlip }: { userId: string; paySlip: number }) {
+    const incomeObj = new Income(paySlip);
     const tax = new Tax(0);
 
     for (let i = 0; i < this.rates.length; i++) {
@@ -61,6 +74,9 @@ export class TaxCalculator {
         rate.apply(incomeObj, tax);
       }
     }
+
+    const upfrontPayment = this.payments.sumUpfrontPayments(userId);
+    tax.deduce(upfrontPayment);
 
     return tax.asNumber();
   }
