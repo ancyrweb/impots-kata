@@ -30,7 +30,7 @@ const examples = [
 
 describe("Behavior: calculating tax rates", () => {
   test.each(examples)(
-    "when the citizen has an income of $income, the tax should be $tax",
+    "Scenario: with an income of $income, the tax should be $tax",
     ({ income, tax }) => {
       const taxCalculator = new TaxCalculator({
         payments: new InMemoryPayments(),
