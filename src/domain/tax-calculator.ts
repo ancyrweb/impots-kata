@@ -1,5 +1,8 @@
 import { Payments } from "./payments/payments.js";
-import { DeductionDTO, DeductionFactory } from "./deductions/deduction-factory.js";
+import {
+  DeductionDTO,
+  DeductionFactory,
+} from "./deductions/deduction-factory.js";
 import { Tax } from "./tax/tax.js";
 import { Income } from "./tax/income.js";
 import { Rate } from "./tax/rate.js";
@@ -38,6 +41,7 @@ export class TaxCalculator {
     const incomeObj = new Income(paySlip);
     const tax = new Tax(0);
 
+    // Apply the various rates
     for (let i = 0; i < this.rates.length; i++) {
       const rate = this.rates[i];
       if (rate.isApplicable(incomeObj)) {
