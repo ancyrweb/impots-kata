@@ -12,4 +12,8 @@ export class Percentage {
   applyTo(amount: number) {
     return amount * this.value;
   }
+
+  isHigherThan(value: Percentage) {
+    return this.value > value.value;
+  }
 }

@@ -1,4 +1,4 @@
-import { Tax } from "../tax.js";
+import { Tax } from "../tax/tax.js";
 
 export interface Deduction {
   applyTo(tax: Tax): void;

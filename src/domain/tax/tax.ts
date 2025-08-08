@@ -1,5 +1,5 @@
-import { SumOfUpfrontPayments } from "./sum-of-upfront-payments.js";
-import { Percentage } from "./percentage.js";
+import { SumOfUpfrontPayments } from "../payments/sum-of-upfront-payments.js";
+import { Percentage } from "../percentage.js";
 
 export class Tax {
   constructor(private amount: number) {}

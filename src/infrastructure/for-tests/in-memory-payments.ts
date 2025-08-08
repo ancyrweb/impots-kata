@@ -1,5 +1,5 @@
-import { Payments } from "../../domain/payments.js";
-import { SumOfUpfrontPayments } from "../../domain/sum-of-upfront-payments.js";
+import { Payments } from "../../domain/payments/payments.js";
+import { SumOfUpfrontPayments } from "../../domain/payments/sum-of-upfront-payments.js";
 
 type Mapping = Record<string, number>;
 

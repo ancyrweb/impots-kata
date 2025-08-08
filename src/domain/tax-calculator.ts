@@ -1,42 +1,9 @@
-import { Payments } from "./payments.js";
-import {
-  DeductionDTO,
-  DeductionFactory,
-} from "./deductions/deduction-factory.js";
-import { Tax } from "./tax.js";
-
-class Rate {
-  constructor(
-    public threshold: number,
-    public rate: number,
-  ) {}
-
-  apply(income: Income, tax: Tax) {
-    const applicableRange = income.asNumber() - this.threshold;
-    tax.add(applicableRange * this.rate);
-    income.deduce(applicableRange);
-  }
-
-  isApplicable(income: Income): boolean {
-    return income.greaterThan(this.threshold);
-  }
-}
-
-class Income {
-  constructor(private amount: number) {}
-
-  asNumber() {
-    return this.amount;
-  }
-
-  deduce(amount: number) {
-    this.amount -= amount;
-  }
-
-  greaterThan(threshold: number): boolean {
-    return this.amount > threshold;
-  }
-}
+import { Payments } from "./payments/payments.js";
+import { DeductionDTO, DeductionFactory } from "./deductions/deduction-factory.js";
+import { Tax } from "./tax/tax.js";
+import { Income } from "./tax/income.js";
+import { Rate } from "./tax/rate.js";
+import { TaxableIncome } from "./tax/taxable-income.js";
 
 type Report = {
   taxableIncome: number;
@@ -78,18 +45,16 @@ export class TaxCalculator {
       }
     }
 
+    // Handle upfront payments
     const upfrontPayments = this.payments.sumUpfrontPayments(userId);
     tax.deduceUpfrontPayments(upfrontPayments);
 
-    if (deductions) {
-      for (const deductionDto of deductions) {
-        const deduction = this.deductionFactory.create(deductionDto);
-        deduction.applyTo(tax);
-      }
-    }
+    // Handle deductions
+    const allDeductions = this.deductionFactory.createAll(deductions ?? []);
+    allDeductions.applyTo(tax);
 
     return {
-      taxableIncome: Math.max(0, paySlip - 10_000),
+      taxableIncome: new TaxableIncome(paySlip).asNumber(),
       toPay: tax.asNumber(),
       paid: upfrontPayments.asNumber(),
     };
