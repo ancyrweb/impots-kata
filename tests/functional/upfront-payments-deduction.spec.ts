@@ -14,6 +14,7 @@ describe("Behavior: deducing past payments", () => {
       });
 
       expect(report.toPay).toBe(1_900);
+      expect(report.paid).toBe(0);
     });
   });
 
@@ -33,6 +34,7 @@ describe("Behavior: deducing past payments", () => {
       });
 
       expect(report.toPay).toBe(1_000);
+      expect(report.paid).toBe(900);
     });
   });
 });

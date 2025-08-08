@@ -84,7 +84,7 @@ export class TaxCalculator {
     tax.deduce(upfrontPayment);
 
     return {
-      taxableIncome: 0,
+      taxableIncome: Math.max(0, paySlip - 10_000),
       toPay: tax.asNumber(),
       paid: upfrontPayment.asNumber(),
     };
