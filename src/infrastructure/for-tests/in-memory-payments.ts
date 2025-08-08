@@ -1,5 +1,5 @@
 import { Payments } from "../../domain/payments.js";
-import { UpfrontPayments } from "../../domain/upfront-payments.js";
+import { SumOfUpfrontPayments } from "../../domain/sum-of-upfront-payments.js";
 
 type Mapping = Record<string, number>;
 
@@ -12,9 +12,9 @@ export class InMemoryPayments implements Payments {
 
   sumUpfrontPayments(userId: string) {
     if (userId in this.mapping) {
-      return new UpfrontPayments(this.mapping[userId]);
+      return new SumOfUpfrontPayments(this.mapping[userId]);
     }
 
-    return new UpfrontPayments(0);
+    return new SumOfUpfrontPayments(0);
   }
 }

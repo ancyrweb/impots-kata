@@ -43,6 +43,7 @@ type Report = {
   toPay: number;
   paid: number;
 };
+
 export class TaxCalculator {
   private rates = [
     new Rate(50_000, 0.3),
@@ -77,8 +78,8 @@ export class TaxCalculator {
       }
     }
 
-    const upfrontPayment = this.payments.sumUpfrontPayments(userId);
-    tax.applyUpfrontPayment(upfrontPayment);
+    const upfrontPayments = this.payments.sumUpfrontPayments(userId);
+    tax.deduceUpfrontPayments(upfrontPayments);
 
     if (deductions) {
       for (const deductionDto of deductions) {
@@ -90,7 +91,7 @@ export class TaxCalculator {
     return {
       taxableIncome: Math.max(0, paySlip - 10_000),
       toPay: tax.asNumber(),
-      paid: upfrontPayment.asNumber(),
+      paid: upfrontPayments.asNumber(),
     };
   }
 }

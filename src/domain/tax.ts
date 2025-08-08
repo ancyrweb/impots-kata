@@ -1,4 +1,4 @@
-import { UpfrontPayments } from "./upfront-payments.js";
+import { SumOfUpfrontPayments } from "./sum-of-upfront-payments.js";
 import { Percentage } from "./percentage.js";
 
 export class Tax {
@@ -16,7 +16,7 @@ export class Tax {
     return this.amount;
   }
 
-  applyUpfrontPayment(upfrontPayment: UpfrontPayments) {
+  deduceUpfrontPayments(upfrontPayment: SumOfUpfrontPayments) {
     this.amount -= upfrontPayment.asNumber();
   }
 

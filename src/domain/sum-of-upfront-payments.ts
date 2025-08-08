@@ -1,4 +1,4 @@
-export class UpfrontPayments {
+export class SumOfUpfrontPayments {
   constructor(private readonly value: number) {}
 
   asNumber(): number {
