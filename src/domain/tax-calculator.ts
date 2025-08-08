@@ -50,6 +50,11 @@ class Income {
   }
 }
 
+type Report = {
+  taxableIncome: number;
+  toPay: number;
+  paid: number;
+};
 export class TaxCalculator {
   private rates = [
     new Rate(50_000, 0.3),
@@ -64,7 +69,7 @@ export class TaxCalculator {
     this.payments = payments;
   }
 
-  calculate({ userId, paySlip }: { userId: string; paySlip: number }) {
+  calculate({ userId, paySlip }: { userId: string; paySlip: number }): Report {
     const incomeObj = new Income(paySlip);
     const tax = new Tax(0);
 
@@ -78,6 +83,10 @@ export class TaxCalculator {
     const upfrontPayment = this.payments.sumUpfrontPayments(userId);
     tax.deduce(upfrontPayment);
 
-    return tax.asNumber();
+    return {
+      taxableIncome: 0,
+      toPay: tax.asNumber(),
+      paid: upfrontPayment.asNumber(),
+    };
   }
 }

@@ -36,11 +36,12 @@ describe("Behavior: calculating tax rates", () => {
         payments: new InMemoryPayments(),
       });
 
-      const calculatedTax: number = taxCalculator.calculate({
+      const report = taxCalculator.calculate({
         userId: "user",
         paySlip: income,
       });
-      expect(calculatedTax).toBe(tax);
+
+      expect(report.toPay).toBe(tax);
     },
   );
 });

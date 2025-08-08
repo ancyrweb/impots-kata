@@ -8,12 +8,12 @@ describe("Behavior: deducing past payments", () => {
         payments: new InMemoryPayments(),
       });
 
-      const calculatedTax: number = taxCalculator.calculate({
+      const report = taxCalculator.calculate({
         userId: "user",
         paySlip: 25_000,
       });
 
-      expect(calculatedTax).toBe(1_900);
+      expect(report.toPay).toBe(1_900);
     });
   });
 
@@ -27,12 +27,12 @@ describe("Behavior: deducing past payments", () => {
         payments,
       });
 
-      const calculatedTax: number = taxCalculator.calculate({
+      const report = taxCalculator.calculate({
         userId: "user",
         paySlip: 25_000,
       });
 
-      expect(calculatedTax).toBe(1_000);
+      expect(report.toPay).toBe(1_000);
     });
   });
 });
