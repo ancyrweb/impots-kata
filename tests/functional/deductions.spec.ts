@@ -77,4 +77,24 @@ describe("Behavior: applying multiple reductions", () => {
 
     expect(tax.toPay).toBe(EXPECTED_TAX * 0.5);
   });
+
+  test("Scenario: percentages deduction are applied before fixed ones", () => {
+    const { calculator } = setup();
+    const tax = calculator.calculate({
+      userId: "user-id",
+      paySlip: 25_000,
+      deductions: [
+        {
+          type: "percentage",
+          value: 0.5,
+        },
+        {
+          type: "fixed",
+          value: 200,
+        },
+      ],
+    });
+
+    expect(tax.toPay).toBe(EXPECTED_TAX * 0.5 - 200);
+  });
 });
