@@ -1,5 +1,5 @@
-import { Income } from "../tax/income.js";
 import { Tax } from "../tax/tax.js";
+import { Income } from "../tax/income.js";
 
 export type ConditionSatisfactionProps = {
   income: Income;
@@ -16,10 +16,18 @@ export class NoCondition implements Condition {
   }
 }
 
-export class FixedThresholdCondition implements Condition {
+export class TaxThresholdCondition implements Condition {
   constructor(public readonly value: number) {}
 
-  isSatisfied(props: ConditionSatisfactionProps): boolean {
-    return props.tax.isHigherOrEqualThan(this.value);
+  isSatisfied({ tax }: ConditionSatisfactionProps): boolean {
+    return tax.isHigherOrEqualThan(this.value);
+  }
+}
+
+export class TaxableIncomeThresholdCondition implements Condition {
+  constructor(public readonly value: number) {}
+
+  isSatisfied({ income }: ConditionSatisfactionProps): boolean {
+    return income.taxablePart() <= this.value;
   }
 }

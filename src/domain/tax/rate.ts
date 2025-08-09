@@ -1,4 +1,4 @@
-import { Income } from "./income.js";
+import { WorkingIncome } from "./working-income.js";
 import { Tax } from "./tax.js";
 
 export class Rate {
@@ -7,13 +7,13 @@ export class Rate {
     public rate: number,
   ) {}
 
-  apply(income: Income, tax: Tax) {
+  apply(income: WorkingIncome, tax: Tax) {
     const applicableRange = income.asNumber() - this.threshold;
     tax.add(applicableRange * this.rate);
     income.deduce(applicableRange);
   }
 
-  isApplicable(income: Income): boolean {
+  isApplicable(income: WorkingIncome): boolean {
     return income.greaterThan(this.threshold);
   }
 }

@@ -2,13 +2,22 @@ import { Percentage } from "../percentage.js";
 import { FixedDeduction } from "./fixed-deduction.js";
 import { PercentageDeduction } from "./percentage-deduction.js";
 import { Deductions } from "./deductions.js";
-import { FixedThresholdCondition, NoCondition } from "./condition.js";
+import {
+  NoCondition,
+  TaxableIncomeThresholdCondition,
+  TaxThresholdCondition,
+} from "./condition.js";
 import { ConditionalDeduction } from "./conditional-deduction.js";
 
-type ConditionDTO = {
-  type: "tax-threshold";
-  value: number;
-};
+type ConditionDTO =
+  | {
+      type: "tax-threshold";
+      value: number;
+    }
+  | {
+      type: "taxable-income-threshold";
+      value: number;
+    };
 
 export type DeductionDTO = {
   type: "fixed" | "percentage";
@@ -54,9 +63,11 @@ export class DeductionFactory {
 
     switch (condition.type) {
       case "tax-threshold":
-        return new FixedThresholdCondition(condition.value);
+        return new TaxThresholdCondition(condition.value);
+      case "taxable-income-threshold":
+        return new TaxableIncomeThresholdCondition(condition.value);
       default:
-        throw new Error(`Unknown condition type: ${condition.type}`);
+        throw new Error(`Unknown condition type: ${(condition as any).type}`);
     }
   }
 }

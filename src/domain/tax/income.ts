@@ -1,15 +1,14 @@
+import { WorkingIncome } from "./working-income.js";
+
 export class Income {
-  constructor(private amount: number) {}
+  constructor(private readonly amount: number) {}
 
-  asNumber() {
-    return this.amount;
+  taxablePart() {
+    const deduction = 10_000;
+    return Math.max(0, this.amount - deduction);
   }
 
-  deduce(amount: number) {
-    this.amount -= amount;
-  }
-
-  greaterThan(threshold: number): boolean {
-    return this.amount > threshold;
+  toWorkingIncome() {
+    return new WorkingIncome(this.amount);
   }
 }

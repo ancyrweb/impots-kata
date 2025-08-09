@@ -1,9 +1,8 @@
 import { Payments } from "./payments/payments.js";
 import { DeductionDTO, DeductionFactory } from "./deductions/deduction-factory.js";
 import { Tax } from "./tax/tax.js";
-import { Income } from "./tax/income.js";
 import { Rate } from "./tax/rate.js";
-import { TaxableIncome } from "./tax/taxable-income.js";
+import { Income } from "./tax/income.js";
 
 type Report = {
   taxableIncome: number;
@@ -35,14 +34,15 @@ export class TaxCalculator {
     paySlip: number;
     deductions?: DeductionDTO[];
   }): Report {
-    const incomeObj = new Income(paySlip);
+    const income = new Income(paySlip);
+    const workingIncome = income.toWorkingIncome();
     const tax = new Tax(0);
 
     // Apply the various rates
     for (let i = 0; i < this.rates.length; i++) {
       const rate = this.rates[i];
-      if (rate.isApplicable(incomeObj)) {
-        rate.apply(incomeObj, tax);
+      if (rate.isApplicable(workingIncome)) {
+        rate.apply(workingIncome, tax);
       }
     }
 
@@ -53,12 +53,12 @@ export class TaxCalculator {
     // Handle deductions
     const allDeductions = this.deductionFactory.createAll(deductions ?? []);
     allDeductions.applyTo({
-      income: incomeObj,
+      income,
       tax,
     });
 
     return {
-      taxableIncome: new TaxableIncome(paySlip).asNumber(),
+      taxableIncome: income.taxablePart(),
       toPay: tax.asNumber(),
       paid: upfrontPayments.asNumber(),
     };

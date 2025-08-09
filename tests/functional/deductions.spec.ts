@@ -117,9 +117,8 @@ describe("Behavior: conditional reductions", () => {
   });
 
   describe("Behavior: tax threshold", () => {
-    test("Scenario: when the tax is BELOW the threshold, the deduction is NOT applied", () => {
-      const { calculator } = setup();
-      const tax = calculator.calculate({
+    const calculate = ({ threshold }: { threshold: number }) => ({
+      totalToPay: setup().calculator.calculate({
         userId: "user-id",
         paySlip: 25_000,
         deductions: [
@@ -128,53 +127,91 @@ describe("Behavior: conditional reductions", () => {
             value: 100,
             condition: {
               type: "tax-threshold",
-              value: 2_000,
+              value: threshold,
             },
           },
         ],
+      }).toPay,
+      taxBeforeDeductions: 1_900,
+      deductionValue: 100,
+    });
+
+    test("Scenario: when the tax is BELOW the threshold, the deduction is NOT applied", () => {
+      const { totalToPay, taxBeforeDeductions } = calculate({
+        threshold: 2_000,
       });
 
-      expect(tax.toPay).toBe(1900);
+      expect(totalToPay).toBe(taxBeforeDeductions);
     });
 
     test("Scenario: when the tax is EQUAL to the threshold, the deduction is applied", () => {
-      const { calculator } = setup();
-      const tax = calculator.calculate({
-        userId: "user-id",
-        paySlip: 25_000,
-        deductions: [
-          {
-            type: "fixed",
-            value: 100,
-            condition: {
-              type: "tax-threshold",
-              value: 1_900,
-            },
-          },
-        ],
+      const { totalToPay, taxBeforeDeductions, deductionValue } = calculate({
+        threshold: 1_900,
       });
 
-      expect(tax.toPay).toBe(1900 - 100);
+      expect(totalToPay).toBe(taxBeforeDeductions - deductionValue);
     });
 
     test("Scenario: when the tax is ABOVE to the threshold, the deduction is applied", () => {
-      const { calculator } = setup();
-      const tax = calculator.calculate({
+      const { totalToPay, taxBeforeDeductions, deductionValue } = calculate({
+        threshold: 1_800,
+      });
+
+      expect(totalToPay).toBe(taxBeforeDeductions - deductionValue);
+    });
+  });
+
+  describe("Behavior: taxable income threshold", () => {
+    const calculate = ({
+      threshold,
+      taxableIncome,
+    }: {
+      threshold: number;
+      taxableIncome: number;
+    }) => ({
+      totalToPay: setup().calculator.calculate({
         userId: "user-id",
-        paySlip: 25_000,
+        paySlip: 10_000 + taxableIncome,
         deductions: [
           {
             type: "fixed",
             value: 100,
             condition: {
-              type: "tax-threshold",
-              value: 1_800,
+              type: "taxable-income-threshold",
+              value: threshold,
             },
           },
         ],
+      }).toPay,
+      taxBeforeDeductions: 1_900,
+      deductionValue: 100,
+    });
+
+    test("Scenario: when the tax is BELOW the threshold, the deduction is NOT applied", () => {
+      const { totalToPay, taxBeforeDeductions } = calculate({
+        taxableIncome: 15_000,
+        threshold: 14_900,
       });
 
-      expect(tax.toPay).toBe(1900 - 100);
+      expect(totalToPay).toBe(taxBeforeDeductions);
+    });
+
+    test("Scenario: when the tax is EQUAL to the threshold, the deduction is applied", () => {
+      const { totalToPay, taxBeforeDeductions, deductionValue } = calculate({
+        taxableIncome: 15_000,
+        threshold: 15_000,
+      });
+
+      expect(totalToPay).toBe(taxBeforeDeductions - deductionValue);
+    });
+
+    test("Scenario: when the tax is ABOVE to the threshold, the deduction is applied", () => {
+      const { totalToPay, taxBeforeDeductions, deductionValue } = calculate({
+        taxableIncome: 15_000,
+        threshold: 15_100,
+      });
+
+      expect(totalToPay).toBe(taxBeforeDeductions - deductionValue);
     });
   });
 });
