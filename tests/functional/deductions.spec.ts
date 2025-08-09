@@ -100,20 +100,22 @@ describe("Behavior: applying multiple reductions", () => {
 });
 
 describe("Behavior: conditional reductions", () => {
-  test("Scenario: by default, a deduction apply without condition", () => {
-    const { calculator } = setup();
-    const tax = calculator.calculate({
-      userId: "user-id",
-      paySlip: 25_000,
-      deductions: [
-        {
-          type: "fixed",
-          value: 100,
-        },
-      ],
-    });
+  describe("Behavior: no condition", () => {
+    test("Scenario: deduction applies unconditionally", () => {
+      const { calculator } = setup();
+      const tax = calculator.calculate({
+        userId: "user-id",
+        paySlip: 25_000,
+        deductions: [
+          {
+            type: "fixed",
+            value: 100,
+          },
+        ],
+      });
 
-    expect(tax.toPay).toBe(1900 - 100);
+      expect(tax.toPay).toBe(1900 - 100);
+    });
   });
 
   describe("Behavior: tax threshold", () => {
