@@ -9,7 +9,11 @@ export class PercentageDeduction implements Deduction {
     tax.prorate(this.value);
   }
 
-  isHigherThan(curr: PercentageDeduction): boolean {
+  isHigherThan(curr: Deduction): boolean {
+    if (!(curr instanceof PercentageDeduction)) {
+      throw new Error("Cannot compare PercentageDeduction with non-PercentageDeduction");
+    }
+
     return this.value.isHigherThan(curr.value);
   }
 }

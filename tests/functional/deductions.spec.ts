@@ -98,3 +98,83 @@ describe("Behavior: applying multiple reductions", () => {
     expect(tax.toPay).toBe(EXPECTED_TAX * 0.5 - 200);
   });
 });
+
+describe("Behavior: conditional reductions", () => {
+  test("Scenario: by default, a deduction apply without condition", () => {
+    const { calculator } = setup();
+    const tax = calculator.calculate({
+      userId: "user-id",
+      paySlip: 25_000,
+      deductions: [
+        {
+          type: "fixed",
+          value: 100,
+        },
+      ],
+    });
+
+    expect(tax.toPay).toBe(1900 - 100);
+  });
+
+  describe("Behavior: tax threshold", () => {
+    test("Scenario: when the tax is BELOW the threshold, the deduction is NOT applied", () => {
+      const { calculator } = setup();
+      const tax = calculator.calculate({
+        userId: "user-id",
+        paySlip: 25_000,
+        deductions: [
+          {
+            type: "fixed",
+            value: 100,
+            condition: {
+              type: "tax-threshold",
+              value: 2_000,
+            },
+          },
+        ],
+      });
+
+      expect(tax.toPay).toBe(1900);
+    });
+
+    test("Scenario: when the tax is EQUAL to the threshold, the deduction is applied", () => {
+      const { calculator } = setup();
+      const tax = calculator.calculate({
+        userId: "user-id",
+        paySlip: 25_000,
+        deductions: [
+          {
+            type: "fixed",
+            value: 100,
+            condition: {
+              type: "tax-threshold",
+              value: 1_900,
+            },
+          },
+        ],
+      });
+
+      expect(tax.toPay).toBe(1900 - 100);
+    });
+
+    test("Scenario: when the tax is ABOVE to the threshold, the deduction is applied", () => {
+      const { calculator } = setup();
+      const tax = calculator.calculate({
+        userId: "user-id",
+        paySlip: 25_000,
+        deductions: [
+          {
+            type: "fixed",
+            value: 100,
+            condition: {
+              type: "tax-threshold",
+              value: 1_800,
+            },
+          },
+        ],
+      });
+
+      expect(tax.toPay).toBe(1900 - 100);
+    });
+  });
+});

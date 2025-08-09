@@ -23,4 +23,8 @@ export class Tax {
   prorate(value: Percentage) {
     this.amount = value.applyTo(this.amount);
   }
+
+  isHigherOrEqualThan(value: number) {
+    return this.amount >= value;
+  }
 }

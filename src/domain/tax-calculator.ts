@@ -1,8 +1,5 @@
 import { Payments } from "./payments/payments.js";
-import {
-  DeductionDTO,
-  DeductionFactory,
-} from "./deductions/deduction-factory.js";
+import { DeductionDTO, DeductionFactory } from "./deductions/deduction-factory.js";
 import { Tax } from "./tax/tax.js";
 import { Income } from "./tax/income.js";
 import { Rate } from "./tax/rate.js";
@@ -55,7 +52,10 @@ export class TaxCalculator {
 
     // Handle deductions
     const allDeductions = this.deductionFactory.createAll(deductions ?? []);
-    allDeductions.applyTo(tax);
+    allDeductions.applyTo({
+      income: incomeObj,
+      tax,
+    });
 
     return {
       taxableIncome: new TaxableIncome(paySlip).asNumber(),
