@@ -27,15 +27,13 @@ export class TaxCalculator {
     entrepreneurRevenues?: CompanyDeclarationDTO[];
   }): Report {
     const calculation = new TaxCalculation({
-      payments: this.payments,
-    });
-
-    calculation.calculate({
-      userId,
       paySlip,
       deductions: this.deductionFactory.createAll(deductions ?? []),
       entrepreneurRevenues: this.entrepreneurRevenuesFactory.createAll(entrepreneurRevenues),
+      upfrontPayments: this.payments.sumUpfrontPayments(userId),
     });
+
+    calculation.calculate();
 
     return calculation.getReport();
   }

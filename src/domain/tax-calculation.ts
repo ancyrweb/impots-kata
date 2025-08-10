@@ -1,11 +1,11 @@
 import { Rate } from "./tax/rate.js";
-import { Payments } from "./payments/payments.js";
 import { Tax } from "./tax/tax.js";
 import { Income } from "./tax/income.js";
 import { Deductions } from "./deductions/deductions.js";
 import { CompanyDeclaration } from "./companies/company-declaration.js";
 import { IncomeBuilder } from "./tax/income-builder.js";
 import { AccumulatedDeductions } from "./tax/accumulated-deductions.js";
+import { SumOfUpfrontPayments } from "./payments/sum-of-upfront-payments.js";
 
 export type Report = {
   taxableIncome: number;
@@ -21,42 +21,42 @@ export class TaxCalculation {
     new Rate(10_000, 0.1),
   ];
 
-  private readonly payments: Payments;
-
   private report: Report = {
     taxableIncome: 0,
     toPay: 0,
     paid: 0,
   };
 
-  private tax: Tax = new Tax(0);
-  private income: Income = new Income(0);
+  private tax: Tax;
+  private income: Income;
+  private upfrontPayments: SumOfUpfrontPayments;
+  private deductions: Deductions;
 
-  constructor({ payments }: { payments: Payments }) {
-    this.payments = payments;
-  }
-
-  calculate({
-    userId,
+  constructor({
     paySlip,
     deductions,
     entrepreneurRevenues,
+    upfrontPayments,
   }: {
-    userId: string;
     paySlip: number;
     deductions: Deductions;
     entrepreneurRevenues: CompanyDeclaration[];
+    upfrontPayments: SumOfUpfrontPayments;
   }) {
-    // Calculate the total income
+    this.tax = new Tax(0);
     this.income = new IncomeBuilder()
       .addPaySlip(paySlip)
       .addCompanyDeclarations(entrepreneurRevenues)
       .build();
 
-    // Calculate final tax
+    this.upfrontPayments = upfrontPayments;
+    this.deductions = deductions;
+  }
+
+  calculate() {
     this.calculateTax();
-    this.deduceUpfrontPayments(userId);
-    this.applyDeductions(deductions ?? []);
+    this.deduceUpfrontPayments();
+    this.applyDeductions();
 
     // Complete the report
     this.report.toPay = this.tax.asNumber();
@@ -67,9 +67,9 @@ export class TaxCalculation {
     return this.report;
   }
 
-  private applyDeductions(deductions: Deductions) {
+  private applyDeductions() {
     const accumulatedDeductions = new AccumulatedDeductions();
-    deductions.applyTo({
+    this.deductions.applyTo({
       income: this.income,
       tax: this.tax,
       accumulatedDeductions,
@@ -78,11 +78,10 @@ export class TaxCalculation {
     this.tax.deduce(accumulatedDeductions.totalApplicable());
   }
 
-  private deduceUpfrontPayments(userId: string) {
-    const upfrontPayments = this.payments.sumUpfrontPayments(userId);
-    this.tax.deduceUpfrontPayments(upfrontPayments);
+  private deduceUpfrontPayments() {
+    this.tax.deduceUpfrontPayments(this.upfrontPayments!);
 
-    this.report.paid = upfrontPayments.asNumber();
+    this.report.paid = this.upfrontPayments!.asNumber();
   }
 
   private calculateTax() {
