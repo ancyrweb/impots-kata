@@ -1,13 +1,13 @@
-import { Percentage } from "../shared/percentage.js";
-import { FixedDeduction } from "./fixed-deduction.js";
-import { PercentageDeduction } from "./percentage-deduction.js";
-import { Deductions } from "./deductions.js";
+import { Percentage } from "../../domain/shared/percentage.js";
+import { FixedDeduction } from "../../domain/deductions/fixed-deduction.js";
+import { PercentageDeduction } from "../../domain/deductions/percentage-deduction.js";
+import { Deductions } from "../../domain/deductions/deductions.js";
 import {
   NoCondition,
   TaxableIncomeThresholdCondition,
   TaxThresholdCondition,
-} from "./condition.js";
-import { ConditionalDeduction } from "./conditional-deduction.js";
+} from "../../domain/deductions/condition.js";
+import { ConditionalDeduction } from "../../domain/deductions/conditional-deduction.js";
 
 type ConditionDTO =
   | {

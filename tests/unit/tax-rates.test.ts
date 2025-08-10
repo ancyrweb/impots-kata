@@ -1,4 +1,4 @@
-import { TaxCalculator } from "../../src/domain/tax-calculator.js";
+import { TaxCalculator } from "../../src/application/tax-calculation/tax-calculator.js";
 import { InMemoryPayments } from "../../src/infrastructure/for-tests/in-memory-payments.js";
 
 const setup = (config?: {}) => {

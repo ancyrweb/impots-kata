@@ -1,12 +1,9 @@
-import { Payments } from "./payments/payments.js";
-import { DeductionDTO, DeductionFactory } from "./deductions/deduction-factory.js";
-import {
-  CompanyDeclarationDTO,
-  CompanyDeclarationsFactory,
-} from "./companies/company-declarations-factory.js";
-import { Report, TaxCalculation } from "./tax-calculation.js";
-import { Companies } from "./companies/companies.js";
-import { Clock } from "./shared/clock.js";
+import { Payments } from "../../domain/payments/payments.js";
+import { DeductionDTO, DeductionFactory } from "./deduction-factory.js";
+import { CompanyDeclarationDTO, CompanyDeclarationsFactory, } from "./company-declarations-factory.js";
+import { Report, TaxCalculation } from "../../domain/tax-calculation.js";
+import { Companies } from "../../domain/companies/companies.js";
+import { Clock } from "../../domain/shared/clock.js";
 
 export class TaxCalculator {
   private readonly payments: Payments;
