@@ -5,9 +5,10 @@ import { Rate } from "./tax/rate.js";
 import { AccumulatedDeductions } from "./tax/accumulated-deductions.js";
 import { IncomeBuilder } from "./tax/income-builder.js";
 import {
-  EntrepreneurRevenueDTO,
-  EntrepreneurRevenuesFactory,
-} from "./entrepreneur-revenues/entrepreneur-revenues-factory.js";
+  CompanyDeclarationDTO,
+  CompanyDeclarationsFactory,
+} from "./companies/company-declarations-factory.js";
+import { Income } from "./tax/income.js";
 
 type Report = {
   taxableIncome: number;
@@ -25,7 +26,7 @@ export class TaxCalculator {
 
   private readonly payments: Payments;
   private readonly deductionFactory = new DeductionFactory();
-  private readonly entrepreneurRevenuesFactory = new EntrepreneurRevenuesFactory();
+  private readonly entrepreneurRevenuesFactory = new CompanyDeclarationsFactory();
 
   constructor({ payments }: { payments: Payments }) {
     this.payments = payments;
@@ -40,15 +41,51 @@ export class TaxCalculator {
     userId: string;
     paySlip: number;
     deductions?: DeductionDTO[];
-    entrepreneurRevenues?: EntrepreneurRevenueDTO[];
+    entrepreneurRevenues?: CompanyDeclarationDTO[];
   }): Report {
     const income = new IncomeBuilder()
       .addPaySlip(paySlip)
-      .addEntrepreneurRevenues(this.entrepreneurRevenuesFactory.createAll(entrepreneurRevenues))
+      .addCompanyDeclarations(this.entrepreneurRevenuesFactory.createAll(entrepreneurRevenues))
       .build();
 
-    const workingIncome = income.toWorkingIncome();
     const tax = new Tax(0);
+
+    this.calculateTax(income, tax);
+
+    // Handle upfront payments
+    const upfrontPayments = this.calculateUpfrontPayments(userId, tax);
+
+    // Handle deductions
+    this.applyDeductions(deductions ?? [], income, tax);
+
+    return {
+      taxableIncome: income.taxablePart(),
+      toPay: tax.asNumber(),
+      paid: upfrontPayments.asNumber(),
+    };
+  }
+
+  private applyDeductions(deductions: DeductionDTO[], income: Income, tax: Tax) {
+    const accumulatedDeductions = new AccumulatedDeductions();
+    const allDeductions = this.deductionFactory.createAll(deductions);
+    allDeductions.applyTo({
+      income,
+      tax,
+      accumulatedDeductions,
+    });
+
+    tax.deduce(accumulatedDeductions.totalApplicable());
+  }
+
+  private calculateUpfrontPayments(userId: string, tax: Tax) {
+    const upfrontPayments = this.payments.sumUpfrontPayments(userId);
+    tax.deduceUpfrontPayments(upfrontPayments);
+
+    return upfrontPayments;
+  }
+
+  private calculateTax(income: Income, tax: Tax) {
+    const workingIncome = income.toWorkingIncome();
 
     // Apply the various rates
     for (let i = 0; i < this.rates.length; i++) {
@@ -57,26 +94,5 @@ export class TaxCalculator {
         rate.apply(workingIncome, tax);
       }
     }
-
-    // Handle upfront payments
-    const upfrontPayments = this.payments.sumUpfrontPayments(userId);
-    tax.deduceUpfrontPayments(upfrontPayments);
-
-    // Handle deductions
-    const accumulatedDeductions = new AccumulatedDeductions();
-    const allDeductions = this.deductionFactory.createAll(deductions ?? []);
-    allDeductions.applyTo({
-      income,
-      tax,
-      accumulatedDeductions,
-    });
-
-    tax.deduce(accumulatedDeductions.totalApplicable());
-
-    return {
-      taxableIncome: income.taxablePart(),
-      toPay: tax.asNumber(),
-      paid: upfrontPayments.asNumber(),
-    };
   }
 }
