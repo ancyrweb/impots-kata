@@ -67,23 +67,6 @@ export class TaxCalculation {
     return this.report;
   }
 
-  private applyDeductions() {
-    const accumulatedDeductions = new AccumulatedDeductions();
-    this.deductions.applyTo({
-      income: this.income,
-      tax: this.tax,
-      accumulatedDeductions,
-    });
-
-    this.tax.deduce(accumulatedDeductions.totalApplicable());
-  }
-
-  private deduceUpfrontPayments() {
-    this.tax.deduceUpfrontPayments(this.upfrontPayments!);
-
-    this.report.paid = this.upfrontPayments!.asNumber();
-  }
-
   private calculateTax() {
     const workingIncome = this.income.toWorkingIncome();
 
@@ -94,5 +77,22 @@ export class TaxCalculation {
         rate.apply(workingIncome, this.tax);
       }
     }
+  }
+
+  private deduceUpfrontPayments() {
+    this.tax.deduceUpfrontPayments(this.upfrontPayments);
+
+    this.report.paid = this.upfrontPayments.asNumber();
+  }
+
+  private applyDeductions() {
+    const accumulatedDeductions = new AccumulatedDeductions();
+    this.deductions.applyTo({
+      income: this.income,
+      tax: this.tax,
+      accumulatedDeductions,
+    });
+
+    this.tax.deduce(accumulatedDeductions.totalApplicable());
   }
 }
