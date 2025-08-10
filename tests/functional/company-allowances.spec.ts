@@ -1,9 +1,13 @@
 import { TaxCalculator } from "../../src/domain/tax-calculator.js";
 import { InMemoryPayments } from "../../src/infrastructure/for-tests/in-memory-payments.js";
+import { InMemoryClock } from "../../src/infrastructure/for-tests/in-memory-clock.js";
+import { InMemoryCompanies } from "../../src/infrastructure/for-tests/in-memory-companies.js";
 
 const setup = () => {
   const calculator = new TaxCalculator({
     payments: new InMemoryPayments(),
+    companies: new InMemoryCompanies(),
+    clock: new InMemoryClock(),
   });
 
   return { calculator };

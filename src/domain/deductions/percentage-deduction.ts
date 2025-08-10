@@ -1,5 +1,5 @@
 import { Deduction } from "./deduction.js";
-import { Percentage } from "../percentage.js";
+import { Percentage } from "../shared/percentage.js";
 import { Tax } from "../tax/tax.js";
 import { AccumulatedDeductions } from "../tax/accumulated-deductions.js";
 

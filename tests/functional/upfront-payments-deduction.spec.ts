@@ -1,11 +1,15 @@
 import { TaxCalculator } from "../../src/domain/tax-calculator.js";
 import { InMemoryPayments } from "../../src/infrastructure/for-tests/in-memory-payments.js";
+import { InMemoryCompanies } from "../../src/infrastructure/for-tests/in-memory-companies.js";
+import { InMemoryClock } from "../../src/infrastructure/for-tests/in-memory-clock.js";
 
 describe("Behavior: deducing past payments", () => {
   describe("Scenario: no payment", () => {
     test("when the user has made no upfront payments, no deduction should be made", () => {
       const taxCalculator = new TaxCalculator({
         payments: new InMemoryPayments(),
+        companies: new InMemoryCompanies(),
+        clock: new InMemoryClock(),
       });
 
       const report = taxCalculator.calculate({
@@ -26,6 +30,8 @@ describe("Behavior: deducing past payments", () => {
 
       const taxCalculator = new TaxCalculator({
         payments,
+        companies: new InMemoryCompanies(),
+        clock: new InMemoryClock(),
       });
 
       const report = taxCalculator.calculate({

@@ -1,4 +1,4 @@
-import { Percentage } from "../percentage.js";
+import { Percentage } from "../shared/percentage.js";
 
 export class Allowance {
   static services() {

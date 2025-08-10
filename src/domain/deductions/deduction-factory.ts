@@ -1,4 +1,4 @@
-import { Percentage } from "../percentage.js";
+import { Percentage } from "../shared/percentage.js";
 import { FixedDeduction } from "./fixed-deduction.js";
 import { PercentageDeduction } from "./percentage-deduction.js";
 import { Deductions } from "./deductions.js";

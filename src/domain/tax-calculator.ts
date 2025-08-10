@@ -5,14 +5,29 @@ import {
   CompanyDeclarationsFactory,
 } from "./companies/company-declarations-factory.js";
 import { Report, TaxCalculation } from "./tax-calculation.js";
+import { Companies } from "./companies/companies.js";
+import { Clock } from "./shared/clock.js";
 
 export class TaxCalculator {
   private readonly payments: Payments;
+  private readonly companies: Companies;
+  private readonly clock: Clock;
+
   private readonly deductionFactory = new DeductionFactory();
   private readonly entrepreneurRevenuesFactory = new CompanyDeclarationsFactory();
 
-  constructor({ payments }: { payments: Payments }) {
+  constructor({
+    payments,
+    companies,
+    clock,
+  }: {
+    payments: Payments;
+    companies: Companies;
+    clock: Clock;
+  }) {
     this.payments = payments;
+    this.companies = companies;
+    this.clock = clock;
   }
 
   calculate({

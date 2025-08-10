@@ -1,5 +1,7 @@
 import { TaxCalculator } from "../../src/domain/tax-calculator.js";
 import { InMemoryPayments } from "../../src/infrastructure/for-tests/in-memory-payments.js";
+import { InMemoryCompanies } from "../../src/infrastructure/for-tests/in-memory-companies.js";
+import { InMemoryClock } from "../../src/infrastructure/for-tests/in-memory-clock.js";
 
 const examples = [
   {
@@ -42,6 +44,8 @@ describe("Behavior: calculating tax rates", () => {
     ({ income, tax }) => {
       const taxCalculator = new TaxCalculator({
         payments: new InMemoryPayments(),
+        companies: new InMemoryCompanies(),
+        clock: new InMemoryClock(),
       });
 
       const report = taxCalculator.calculate({
