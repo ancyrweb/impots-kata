@@ -2,8 +2,12 @@ import { Payments } from "./payments/payments.js";
 import { DeductionDTO, DeductionFactory } from "./deductions/deduction-factory.js";
 import { Tax } from "./tax/tax.js";
 import { Rate } from "./tax/rate.js";
-import { Income } from "./tax/income.js";
 import { AccumulatedDeductions } from "./tax/accumulated-deductions.js";
+import { IncomeBuilder } from "./tax/income-builder.js";
+import {
+  EntrepreneurRevenueDTO,
+  EntrepreneurRevenuesFactory,
+} from "./entrepreneur-revenues/entrepreneur-revenues-factory.js";
 
 type Report = {
   taxableIncome: number;
@@ -21,6 +25,7 @@ export class TaxCalculator {
 
   private readonly payments: Payments;
   private readonly deductionFactory = new DeductionFactory();
+  private readonly entrepreneurRevenuesFactory = new EntrepreneurRevenuesFactory();
 
   constructor({ payments }: { payments: Payments }) {
     this.payments = payments;
@@ -30,12 +35,18 @@ export class TaxCalculator {
     userId,
     paySlip,
     deductions,
+    entrepreneurRevenues,
   }: {
     userId: string;
     paySlip: number;
     deductions?: DeductionDTO[];
+    entrepreneurRevenues?: EntrepreneurRevenueDTO[];
   }): Report {
-    const income = new Income(paySlip);
+    const income = new IncomeBuilder()
+      .addPaySlip(paySlip)
+      .addEntrepreneurRevenues(this.entrepreneurRevenuesFactory.createAll(entrepreneurRevenues))
+      .build();
+
     const workingIncome = income.toWorkingIncome();
     const tax = new Tax(0);
 

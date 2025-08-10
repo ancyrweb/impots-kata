@@ -10,7 +10,11 @@ export class Percentage {
   constructor(public readonly value: number) {}
 
   applyTo(amount: number) {
-    return amount * this.value;
+    return Math.round(amount * this.value);
+  }
+
+  complement() {
+    return new Percentage(1 - this.value);
   }
 
   isHigherThan(value: Percentage) {
