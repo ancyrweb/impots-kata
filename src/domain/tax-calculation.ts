@@ -6,6 +6,7 @@ import { CompanyDeclaration } from "./companies/company-declaration.js";
 import { IncomeBuilder } from "./tax/income-builder.js";
 import { AccumulatedDeductions } from "./tax/accumulated-deductions.js";
 import { SumOfUpfrontPayments } from "./payments/sum-of-upfront-payments.js";
+import { Year } from "./shared/year.js";
 
 export type Report = {
   taxableIncome: number;
@@ -37,14 +38,16 @@ export class TaxCalculation {
     deductions,
     entrepreneurRevenues,
     upfrontPayments,
+    currentYear,
   }: {
     paySlip: number;
     deductions: Deductions;
     entrepreneurRevenues: CompanyDeclaration[];
     upfrontPayments: SumOfUpfrontPayments;
+    currentYear: Year;
   }) {
     this.tax = new Tax(0);
-    this.income = new IncomeBuilder()
+    this.income = new IncomeBuilder(currentYear)
       .addPaySlip(paySlip)
       .addCompanyDeclarations(entrepreneurRevenues)
       .build();

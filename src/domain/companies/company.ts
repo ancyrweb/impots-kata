@@ -22,4 +22,16 @@ export class Company {
   belongsTo(ownerId: string): boolean {
     return this.ownerId === ownerId;
   }
+
+  isDeclarationLegal(currentYear: Year) {
+    return !this.yearOfCreation.equals(currentYear);
+  }
+
+  isFirstYear(currentYear: Year) {
+    return this.yearOfCreation.equals(currentYear.minus(1));
+  }
+
+  getId() {
+    return this.id;
+  }
 }

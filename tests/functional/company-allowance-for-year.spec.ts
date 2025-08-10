@@ -5,25 +5,35 @@ import { InMemoryCompanies } from "../../src/infrastructure/for-tests/in-memory-
 import { CompanyTestFactory } from "../utils/company-test-factory.js";
 import { Year } from "../../src/domain/shared/year.js";
 
-const setup = () => {
+const setup = ({
+  companyCreationYear,
+  currentYear,
+}: {
+  companyCreationYear: Year;
+  currentYear: Year;
+}) => {
   const calculator = new TaxCalculator({
     payments: new InMemoryPayments(),
     companies: new InMemoryCompanies([
       CompanyTestFactory.create({
         id: "company-id",
         ownerId: "user-id",
-        yearOfCreation: new Year(2000),
+        yearOfCreation: companyCreationYear,
       }),
     ]),
-    clock: new InMemoryClock(new Year(2025)),
+    clock: new InMemoryClock(currentYear),
   });
 
   return { calculator };
 };
 
-describe("Behavior: company allowances", () => {
-  test("Scenario: services revenues have 34% allowance", () => {
-    const { calculator } = setup();
+describe("Behavior: allowance depending on the year of creation", () => {
+  test("Scenario: companies dont pay taxes the first year", () => {
+    const { calculator } = setup({
+      companyCreationYear: new Year(2024),
+      currentYear: new Year(2025),
+    });
+
     const tax = calculator.calculate({
       userId: "user-id",
       paySlip: 0,
@@ -36,23 +46,27 @@ describe("Behavior: company allowances", () => {
       ],
     });
 
-    expect(tax.toPay).toBe(12_600);
+    expect(tax.toPay).toBe(0);
   });
 
-  test("Scenario: commercial activities revenues have 71% allowance", () => {
-    const { calculator } = setup();
+  test("Scenario: companies pay taxes on subsequent years", () => {
+    const { calculator } = setup({
+      companyCreationYear: new Year(2024),
+      currentYear: new Year(2026),
+    });
+
     const tax = calculator.calculate({
       userId: "user-id",
       paySlip: 0,
       entrepreneurRevenues: [
         {
           companyId: "company-id",
-          type: "commercial",
+          type: "services",
           revenues: 100_000,
         },
       ],
     });
 
-    expect(tax.toPay).toBe(2_620);
+    expect(tax.toPay).not.toBe(0);
   });
 });

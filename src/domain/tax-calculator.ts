@@ -13,8 +13,8 @@ export class TaxCalculator {
   private readonly companies: Companies;
   private readonly clock: Clock;
 
-  private readonly deductionFactory = new DeductionFactory();
-  private readonly entrepreneurRevenuesFactory = new CompanyDeclarationsFactory();
+  private readonly deductionFactory: DeductionFactory;
+  private readonly companyDeclarationsFactory: CompanyDeclarationsFactory;
 
   constructor({
     payments,
@@ -28,6 +28,9 @@ export class TaxCalculator {
     this.payments = payments;
     this.companies = companies;
     this.clock = clock;
+
+    this.deductionFactory = new DeductionFactory();
+    this.companyDeclarationsFactory = new CompanyDeclarationsFactory(this.companies);
   }
 
   calculate({
@@ -44,8 +47,9 @@ export class TaxCalculator {
     const calculation = new TaxCalculation({
       paySlip,
       deductions: this.deductionFactory.createAll(deductions ?? []),
-      entrepreneurRevenues: this.entrepreneurRevenuesFactory.createAll(entrepreneurRevenues),
+      entrepreneurRevenues: this.companyDeclarationsFactory.createAll(userId, entrepreneurRevenues),
       upfrontPayments: this.payments.sumUpfrontPayments(userId),
+      currentYear: this.clock.currentYear(),
     });
 
     calculation.calculate();
