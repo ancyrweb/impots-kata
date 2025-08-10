@@ -20,12 +20,12 @@ export class Deductions {
   private applyFixed(props: ConditionSatisfactionProps) {
     for (const deduction of this.allFixed) {
       if (deduction.isApplicable(props)) {
-        deduction.applyTo(props.tax);
+        deduction.applyTo(props.tax, props.accumulatedDeductions);
       }
     }
   }
 
   private applyPercentages(props: ConditionSatisfactionProps) {
-    this.percentage.applyTo(props.tax);
+    this.percentage.applyTo(props.tax, props.accumulatedDeductions);
   }
 }

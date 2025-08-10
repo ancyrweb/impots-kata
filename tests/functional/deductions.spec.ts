@@ -217,3 +217,21 @@ describe("Behavior: conditional reductions", () => {
     });
   });
 });
+
+describe("Behavior: capped deductions", () => {
+  test("Scenario: deductions cannot exceed 1 271 Borgis", () => {
+    const { calculator } = setup();
+    const { toPay } = calculator.calculate({
+      userId: "user-id",
+      paySlip: 25_000,
+      deductions: [
+        {
+          type: "fixed",
+          value: 1_272,
+        },
+      ],
+    });
+
+    expect(toPay).toBe(1_900 - 1_271);
+  });
+});

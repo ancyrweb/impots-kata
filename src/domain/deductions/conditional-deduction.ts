@@ -1,6 +1,7 @@
 import { Deduction } from "./deduction.js";
 import { Condition, ConditionSatisfactionProps } from "./condition.js";
 import { Tax } from "../tax/tax.js";
+import { AccumulatedDeductions } from "../tax/accumulated-deductions.js";
 
 export class ConditionalDeduction implements Deduction {
   constructor(
@@ -12,8 +13,8 @@ export class ConditionalDeduction implements Deduction {
     return this.condition.isSatisfied(props);
   }
 
-  applyTo(tax: Tax): void {
-    this.deduction.applyTo(tax);
+  applyTo(tax: Tax, accumulatedDeductions: AccumulatedDeductions): void {
+    this.deduction.applyTo(tax, accumulatedDeductions);
   }
 
   isHigherThan(other: Deduction): boolean {

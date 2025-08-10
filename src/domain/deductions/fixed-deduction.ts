@@ -1,11 +1,12 @@
 import { Deduction } from "./deduction.js";
 import { Tax } from "../tax/tax.js";
+import { AccumulatedDeductions } from "../tax/accumulated-deductions.js";
 
 export class FixedDeduction implements Deduction {
   constructor(private readonly value: number) {}
 
-  applyTo(tax: Tax): void {
-    tax.deduce(this.value);
+  applyTo(_tax: Tax, accumulatedDeductions: AccumulatedDeductions): void {
+    accumulatedDeductions.add(this.value);
   }
 
   isHigherThan(other: Deduction): boolean {

@@ -3,6 +3,7 @@ import { DeductionDTO, DeductionFactory } from "./deductions/deduction-factory.j
 import { Tax } from "./tax/tax.js";
 import { Rate } from "./tax/rate.js";
 import { Income } from "./tax/income.js";
+import { AccumulatedDeductions } from "./tax/accumulated-deductions.js";
 
 type Report = {
   taxableIncome: number;
@@ -51,11 +52,15 @@ export class TaxCalculator {
     tax.deduceUpfrontPayments(upfrontPayments);
 
     // Handle deductions
+    const accumulatedDeductions = new AccumulatedDeductions();
     const allDeductions = this.deductionFactory.createAll(deductions ?? []);
     allDeductions.applyTo({
       income,
       tax,
+      accumulatedDeductions,
     });
+
+    tax.deduce(accumulatedDeductions.totalApplicable());
 
     return {
       taxableIncome: income.taxablePart(),

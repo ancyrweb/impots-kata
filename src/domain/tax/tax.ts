@@ -20,8 +20,8 @@ export class Tax {
     this.amount -= upfrontPayment.asNumber();
   }
 
-  prorate(value: Percentage) {
-    this.amount = value.applyTo(this.amount);
+  prorated(value: Percentage) {
+    return value.applyTo(this.amount);
   }
 
   isHigherOrEqualThan(value: number) {

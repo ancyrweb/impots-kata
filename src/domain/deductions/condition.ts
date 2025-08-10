@@ -1,9 +1,11 @@
 import { Tax } from "../tax/tax.js";
 import { Income } from "../tax/income.js";
+import { AccumulatedDeductions } from "../tax/accumulated-deductions.js";
 
 export type ConditionSatisfactionProps = {
   income: Income;
   tax: Tax;
+  accumulatedDeductions: AccumulatedDeductions;
 };
 
 export interface Condition {

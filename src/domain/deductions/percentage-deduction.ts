@@ -1,12 +1,13 @@
 import { Deduction } from "./deduction.js";
 import { Percentage } from "../percentage.js";
 import { Tax } from "../tax/tax.js";
+import { AccumulatedDeductions } from "../tax/accumulated-deductions.js";
 
 export class PercentageDeduction implements Deduction {
   constructor(public value: Percentage) {}
 
-  applyTo(tax: Tax): void {
-    tax.prorate(this.value);
+  applyTo(tax: Tax, accumulatedDeductions: AccumulatedDeductions): void {
+    accumulatedDeductions.add(tax.prorated(this.value));
   }
 
   isHigherThan(curr: Deduction): boolean {
