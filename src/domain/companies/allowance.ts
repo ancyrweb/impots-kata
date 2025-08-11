@@ -1,4 +1,5 @@
 import { Percentage } from "../shared/percentage.js";
+import { CompanyRevenues } from "./company-revenues.js";
 
 export class Allowance {
   static services() {
@@ -11,7 +12,7 @@ export class Allowance {
 
   constructor(private readonly allowance: Percentage) {}
 
-  applyTo(revenues: number) {
-    return this.allowance.applyTo(revenues);
+  applyTo(revenues: CompanyRevenues) {
+    return this.allowance.applyTo(revenues.asNumber());
   }
 }

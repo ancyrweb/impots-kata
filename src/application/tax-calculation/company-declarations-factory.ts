@@ -1,6 +1,7 @@
 import { CompanyDeclaration } from "../../domain/companies/company-declaration.js";
 import { Allowance } from "../../domain/companies/allowance.js";
 import { Companies } from "../../domain/companies/companies.js";
+import { CompanyRevenues } from "../../domain/companies/company-revenues.js";
 
 export type CompanyDeclarationDTO = {
   companyId: string;
@@ -19,7 +20,11 @@ export class CompanyDeclarationsFactory {
     const userCompanies = this.companies.findByUserId(userId);
 
     return dtos.map((dto) => {
-      return new CompanyDeclaration(userCompanies[0], this.detectAllowance(dto), dto.revenues);
+      return new CompanyDeclaration(
+        userCompanies[0],
+        this.detectAllowance(dto),
+        new CompanyRevenues(dto.revenues),
+      );
     });
   }
 
