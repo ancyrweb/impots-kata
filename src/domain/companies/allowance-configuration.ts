@@ -13,6 +13,25 @@ export class AllowanceConfiguration {
         default:
           throw new Error(`Unknown company revenue type: ${type}`);
       }
+    } else if (city === "Tabhati") {
+      switch (type) {
+        case "services":
+          return new TieredAllowance([
+            Percentage.fromDecimal(1),
+            Percentage.fromDecimal(1),
+            Percentage.fromDecimal(1),
+            Percentage.fromDecimal(0.34),
+          ]);
+        case "commercial":
+          return new TieredAllowance([
+            Percentage.fromDecimal(1),
+            Percentage.fromDecimal(1),
+            Percentage.fromDecimal(1),
+            Percentage.fromDecimal(0.71),
+          ]);
+        default:
+          throw new Error(`Unknown company revenue type: ${type}`);
+      }
     }
 
     switch (type) {

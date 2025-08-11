@@ -67,6 +67,44 @@ describe("Behavior: company allowances", () => {
     });
   });
 
+  describe("Context: in Tabhati", () => {
+    test("Rule: 100% allowance the first three years", () => {
+      const tax = calculate({
+        city: "Tabhati",
+        revenueType: "services",
+        revenues: 100_000,
+        currentYear: new Year(2026),
+        yearOfCreation: new Year(2023),
+      });
+
+      expect(tax.toPay).toBe(0);
+    });
+
+    test("Rule: 34% allowance for services the next years", () => {
+      const tax = calculate({
+        city: "Tabhati",
+        revenueType: "services",
+        revenues: 100_000,
+        currentYear: new Year(2027),
+        yearOfCreation: new Year(2023),
+      });
+
+      expect(tax.toPay).toBe(12_600);
+    });
+
+    test("Rule: 71% allowance for commercial the next years", () => {
+      const tax = calculate({
+        city: "Tabhati",
+        revenueType: "commercial",
+        revenues: 100_000,
+        currentYear: new Year(2027),
+        yearOfCreation: new Year(2023),
+      });
+
+      expect(tax.toPay).toBe(2_620);
+    });
+  });
+
   describe("Context: in all other cities", () => {
     test("Rule: services revenues have 34% allowance", () => {
       const tax = calculate({
