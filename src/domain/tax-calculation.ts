@@ -8,6 +8,7 @@ import { AccumulatedDeductions } from "./tax/accumulated-deductions.js";
 import { SumOfUpfrontPayments } from "./payments/sum-of-upfront-payments.js";
 import { Year } from "./shared/year.js";
 import { Dividend } from "./dividends/dividend.js";
+import { DividendTaxRuleConfiguration } from "./dividends/dividend-tax-rule-configuration.js";
 
 export type Report = {
   taxableIncome: number;
@@ -34,6 +35,9 @@ export class TaxCalculation {
   private upfrontPayments: SumOfUpfrontPayments;
   private deductions: Deductions;
   private dividends: Dividend[];
+  private currentYear: Year;
+
+  private dividendTaxRuleConfiguration: DividendTaxRuleConfiguration;
 
   constructor({
     paySlip,
@@ -59,6 +63,8 @@ export class TaxCalculation {
     this.upfrontPayments = upfrontPayments;
     this.deductions = deductions;
     this.dividends = dividends;
+    this.currentYear = currentYear;
+    this.dividendTaxRuleConfiguration = new DividendTaxRuleConfiguration();
   }
 
   calculate() {
@@ -107,7 +113,9 @@ export class TaxCalculation {
 
   private applyDividends() {
     for (const dividend of this.dividends) {
-      dividend.applyTo(this.tax);
+      const rule = this.dividendTaxRuleConfiguration.get(dividend.getCompany().getCity());
+      const tax = rule.computeTax(dividend, this.currentYear);
+      this.tax.addTax(tax);
     }
   }
 }

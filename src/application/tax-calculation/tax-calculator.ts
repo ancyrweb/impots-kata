@@ -33,7 +33,7 @@ export class TaxCalculator {
 
     this.deductionFactory = new DeductionFactory();
     this.companyDeclarationsFactory = new CompanyDeclarationsFactory(this.companies);
-    this.dividendsFactory = new DividendFactory();
+    this.dividendsFactory = new DividendFactory(this.companies);
   }
 
   calculate({
@@ -54,7 +54,7 @@ export class TaxCalculator {
       deductions: this.deductionFactory.createAll(deductions ?? []),
       entrepreneurRevenues: this.companyDeclarationsFactory.createAll(userId, entrepreneurRevenues),
       upfrontPayments: this.payments.sumUpfrontPayments(userId),
-      dividends: this.dividendsFactory.createAll(dividends ?? []),
+      dividends: this.dividendsFactory.createAll(userId, dividends ?? []),
       currentYear: this.clock.currentYear(),
     });
 

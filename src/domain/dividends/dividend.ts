@@ -1,11 +1,16 @@
-import { Tax } from "../tax/tax.js";
+import { Company } from "../companies/company.js";
 
 export class Dividend {
-  private static DIVIDEND_RATE = 0.3;
+  constructor(
+    private readonly amount: number,
+    private readonly company: Company,
+  ) {}
 
-  constructor(private readonly amount: number) {}
+  asNumber() {
+    return this.amount;
+  }
 
-  applyTo(tax: Tax) {
-    tax.add(this.amount * Dividend.DIVIDEND_RATE);
+  getCompany() {
+    return this.company;
   }
 }

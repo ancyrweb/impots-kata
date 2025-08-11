@@ -8,6 +8,10 @@ export class Tax {
     this.amount += amount;
   }
 
+  addTax(tax: Tax) {
+    this.amount += tax.asNumber();
+  }
+
   deduce(amount: number) {
     this.amount -= amount;
   }
