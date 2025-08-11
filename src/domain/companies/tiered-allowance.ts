@@ -8,12 +8,12 @@ export class TieredAllowance implements Allowance {
   constructor(private readonly allowances: Percentage[]) {}
 
   applyTo(revenues: CompanyRevenues, company: Company, currentYear: Year) {
-    const delta = Math.max(0, currentYear.difference(company.getYearOfCreation()) - 1);
+    const differenceInYears = Math.max(0, currentYear.difference(company.getYearOfCreation()) - 1);
+    const allowance =
+      differenceInYears >= this.allowances.length
+        ? this.allowances[this.allowances.length - 1]
+        : this.allowances[differenceInYears];
 
-    if (delta >= this.allowances.length) {
-      return this.allowances[this.allowances.length - 1].complement().applyTo(revenues.asNumber());
-    }
-
-    return this.allowances[delta].complement().applyTo(revenues.asNumber());
+    return allowance.complement().applyTo(revenues.asNumber());
   }
 }
