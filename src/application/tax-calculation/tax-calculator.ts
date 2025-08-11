@@ -1,6 +1,9 @@
 import { Payments } from "../../domain/payments/payments.js";
 import { DeductionDTO, DeductionFactory } from "./deduction-factory.js";
-import { CompanyDeclarationDTO, CompanyDeclarationsFactory, } from "./company-declarations-factory.js";
+import {
+  CompanyDeclarationDTO,
+  CompanyDeclarationsFactory,
+} from "./company-declarations-factory.js";
 import { Report, TaxCalculation } from "../../domain/tax-calculation.js";
 import { Companies } from "../../domain/companies/companies.js";
 import { Clock } from "../../domain/shared/clock.js";
