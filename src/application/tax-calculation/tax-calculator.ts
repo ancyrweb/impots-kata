@@ -7,6 +7,7 @@ import {
 import { Report, TaxCalculation } from "../../domain/tax-calculation.js";
 import { Companies } from "../../domain/companies/companies.js";
 import { Clock } from "../../domain/shared/clock.js";
+import { DividendDTO, DividendFactory } from "./dividend-factory.js";
 
 export class TaxCalculator {
   private readonly payments: Payments;
@@ -15,6 +16,7 @@ export class TaxCalculator {
 
   private readonly deductionFactory: DeductionFactory;
   private readonly companyDeclarationsFactory: CompanyDeclarationsFactory;
+  private readonly dividendsFactory: DividendFactory;
 
   constructor({
     payments,
@@ -31,6 +33,7 @@ export class TaxCalculator {
 
     this.deductionFactory = new DeductionFactory();
     this.companyDeclarationsFactory = new CompanyDeclarationsFactory(this.companies);
+    this.dividendsFactory = new DividendFactory();
   }
 
   calculate({
@@ -38,17 +41,20 @@ export class TaxCalculator {
     paySlip,
     deductions,
     entrepreneurRevenues,
+    dividends,
   }: {
     userId: string;
     paySlip: number;
     deductions?: DeductionDTO[];
     entrepreneurRevenues?: CompanyDeclarationDTO[];
+    dividends?: DividendDTO[];
   }): Report {
     const calculation = new TaxCalculation({
       paySlip,
       deductions: this.deductionFactory.createAll(deductions ?? []),
       entrepreneurRevenues: this.companyDeclarationsFactory.createAll(userId, entrepreneurRevenues),
       upfrontPayments: this.payments.sumUpfrontPayments(userId),
+      dividends: this.dividendsFactory.createAll(dividends ?? []),
       currentYear: this.clock.currentYear(),
     });
 

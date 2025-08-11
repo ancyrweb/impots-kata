@@ -7,6 +7,7 @@ import { IncomeBuilder } from "./tax/income-builder.js";
 import { AccumulatedDeductions } from "./tax/accumulated-deductions.js";
 import { SumOfUpfrontPayments } from "./payments/sum-of-upfront-payments.js";
 import { Year } from "./shared/year.js";
+import { Dividend } from "./dividends/dividend.js";
 
 export type Report = {
   taxableIncome: number;
@@ -32,18 +33,21 @@ export class TaxCalculation {
   private income: Income;
   private upfrontPayments: SumOfUpfrontPayments;
   private deductions: Deductions;
+  private dividends: Dividend[];
 
   constructor({
     paySlip,
     deductions,
     entrepreneurRevenues,
     upfrontPayments,
+    dividends,
     currentYear,
   }: {
     paySlip: number;
     deductions: Deductions;
     entrepreneurRevenues: CompanyDeclaration[];
     upfrontPayments: SumOfUpfrontPayments;
+    dividends: Dividend[];
     currentYear: Year;
   }) {
     this.tax = new Tax(0);
@@ -54,12 +58,14 @@ export class TaxCalculation {
 
     this.upfrontPayments = upfrontPayments;
     this.deductions = deductions;
+    this.dividends = dividends;
   }
 
   calculate() {
     this.calculateTax();
     this.deduceUpfrontPayments();
     this.applyDeductions();
+    this.applyDividends();
 
     // Complete the report
     this.report.toPay = this.tax.asNumber();
@@ -97,5 +103,11 @@ export class TaxCalculation {
     });
 
     this.tax.deduce(accumulatedDeductions.totalApplicable());
+  }
+
+  private applyDividends() {
+    for (const dividend of this.dividends) {
+      dividend.applyTo(this.tax);
+    }
   }
 }
