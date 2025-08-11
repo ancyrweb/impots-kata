@@ -1,7 +1,7 @@
 import { CompanyDeclaration } from "../../domain/companies/company-declaration.js";
-import { Allowance } from "../../domain/companies/allowance.js";
 import { Companies } from "../../domain/companies/companies.js";
 import { CompanyRevenues } from "../../domain/companies/company-revenues.js";
+import { AllowanceConfiguration } from "../../domain/companies/allowance-configuration.js";
 
 export type CompanyDeclarationDTO = {
   companyId: string;
@@ -10,6 +10,8 @@ export type CompanyDeclarationDTO = {
 };
 
 export class CompanyDeclarationsFactory {
+  private readonly allowanceConfiguration = new AllowanceConfiguration();
+
   constructor(private readonly companies: Companies) {}
 
   createAll(userId: string, dtos?: CompanyDeclarationDTO[]): CompanyDeclaration[] {
@@ -20,22 +22,16 @@ export class CompanyDeclarationsFactory {
     const userCompanies = this.companies.findByUserId(userId);
 
     return dtos.map((dto) => {
+      const company = userCompanies.find((c) => c.getId() === dto.companyId);
+      if (!company) {
+        throw new Error(`Company with ID ${dto.companyId} not found for user ${userId}`);
+      }
+
       return new CompanyDeclaration(
-        userCompanies[0],
-        this.detectAllowance(dto),
+        company,
+        this.allowanceConfiguration.get(company.getCity(), dto.type),
         new CompanyRevenues(dto.revenues),
       );
     });
-  }
-
-  private detectAllowance(dto: CompanyDeclarationDTO) {
-    switch (dto.type) {
-      case "services":
-        return Allowance.services();
-      case "commercial":
-        return Allowance.commercial();
-      default:
-        throw new Error(`Unknown company revenue type: ${dto.type}`);
-    }
   }
 }

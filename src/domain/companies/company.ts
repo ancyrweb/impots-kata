@@ -4,19 +4,23 @@ export class Company {
   private readonly id: string;
   private readonly ownerId: string;
   private readonly yearOfCreation: Year;
+  private readonly city: string;
 
   constructor({
     id,
     ownerId,
     yearOfCreation,
+    city,
   }: {
     id: string;
     ownerId: string;
     yearOfCreation: Year;
+    city: string;
   }) {
     this.id = id;
     this.ownerId = ownerId;
     this.yearOfCreation = yearOfCreation;
+    this.city = city;
   }
 
   belongsTo(ownerId: string): boolean {
@@ -33,5 +37,9 @@ export class Company {
 
   getId() {
     return this.id;
+  }
+
+  getCity() {
+    return this.city;
   }
 }

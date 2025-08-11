@@ -28,7 +28,7 @@ const setup = ({
 };
 
 describe("Behavior: allowance depending on the year of creation", () => {
-  test("Scenario: companies dont pay taxes the first year", () => {
+  test("Rule: companies dont pay taxes the first year", () => {
     const { calculator } = setup({
       companyCreationYear: new Year(2024),
       currentYear: new Year(2025),
@@ -49,7 +49,7 @@ describe("Behavior: allowance depending on the year of creation", () => {
     expect(tax.toPay).toBe(0);
   });
 
-  test("Scenario: companies pay taxes on subsequent years", () => {
+  test("Rule: companies pay taxes on subsequent years", () => {
     const { calculator } = setup({
       companyCreationYear: new Year(2024),
       currentYear: new Year(2026),

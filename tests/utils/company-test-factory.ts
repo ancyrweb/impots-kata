@@ -6,15 +6,18 @@ export class CompanyTestFactory {
     id = "company-id",
     ownerId = "owner-id",
     yearOfCreation = new Year(2025),
+    city = "Default City",
   }: {
     id?: string;
     ownerId?: string;
     yearOfCreation?: Year;
+    city?: string;
   } = {}): Company {
     return new Company({
       id,
       ownerId,
       yearOfCreation,
+      city,
     });
   }
 }

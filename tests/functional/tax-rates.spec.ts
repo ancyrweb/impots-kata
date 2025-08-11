@@ -29,8 +29,16 @@ const examples = [
     tax: 4_050,
   },
   {
+    income: 49_000,
+    tax: 7_550,
+  },
+  {
     income: 66_000,
     tax: 12_600,
+  },
+  {
+    income: 75_000,
+    tax: 15_300,
   },
   {
     income: 100_000,
