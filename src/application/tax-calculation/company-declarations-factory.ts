@@ -1,7 +1,7 @@
 import { CompanyDeclaration } from "../../domain/companies/company-declaration.js";
 import { Companies } from "../../domain/companies/companies.js";
 import { CompanyRevenues } from "../../domain/companies/company-revenues.js";
-import { AllowanceConfiguration } from "../../domain/companies/allowance-configuration.js";
+import { AllowanceConfiguration } from "../../domain/companies/allowances/allowance-configuration.js";
 
 export type CompanyDeclarationDTO = {
   companyId: string;

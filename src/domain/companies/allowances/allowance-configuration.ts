@@ -1,5 +1,5 @@
 import { FixedAllowance } from "./fixed-allowance.js";
-import { Percentage } from "../shared/percentage.js";
+import { Percentage } from "../../shared/percentage.js";
 import { TieredAllowance } from "./tiered-allowance.js";
 import { Allowance } from "./allowance.js";
 
