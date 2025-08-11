@@ -8,4 +8,8 @@ export class Year {
   minus(number: number) {
     return new Year(this.year - number);
   }
+
+  difference(yearOfCreation: Year) {
+    return this.year - yearOfCreation.year;
+  }
 }

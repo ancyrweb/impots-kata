@@ -1,6 +1,7 @@
-import { Allowance } from "./allowance.js";
 import { Company } from "./company.js";
 import { CompanyRevenues } from "./company-revenues.js";
+import { Year } from "../shared/year.js";
+import { Allowance } from "./allowance.js";
 
 export class CompanyDeclaration {
   constructor(
@@ -9,8 +10,8 @@ export class CompanyDeclaration {
     private readonly revenues: CompanyRevenues,
   ) {}
 
-  revenuesAfterAllowance() {
-    return this.allowance.applyTo(this.revenues);
+  revenuesAfterAllowance(currentYear: Year) {
+    return this.allowance.applyTo(this.revenues, this.company, currentYear);
   }
 
   getCompany() {

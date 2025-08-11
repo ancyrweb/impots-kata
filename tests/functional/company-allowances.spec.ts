@@ -5,14 +5,18 @@ import { InMemoryCompanies } from "../../src/infrastructure/for-tests/in-memory-
 import { CompanyTestFactory } from "../utils/company-test-factory.js";
 import { Year } from "../../src/domain/shared/year.js";
 
-const setup = ({
+const calculate = ({
   yearOfCreation = new Year(2000),
   currentYear = new Year(2025),
   city = "Random City",
+  revenueType = "services",
+  revenues = 100_000,
 }: {
   yearOfCreation?: Year;
   currentYear?: Year;
   city?: string;
+  revenueType?: "services" | "commercial";
+  revenues?: number;
 }) => {
   const calculator = new TaxCalculator({
     payments: new InMemoryPayments(),
@@ -27,45 +31,36 @@ const setup = ({
     clock: new InMemoryClock(currentYear),
   });
 
-  return { calculator };
+  return calculator.calculate({
+    userId: "user-id",
+    paySlip: 0,
+    entrepreneurRevenues: [
+      {
+        companyId: "company-id",
+        type: revenueType,
+        revenues: revenues,
+      },
+    ],
+  });
 };
 
 describe("Behavior: company allowances", () => {
   describe("Context: in Amb", () => {
     test("Rule: services revenues have 25% allowance", () => {
-      const { calculator } = setup({
+      const tax = calculate({
         city: "Amb",
-      });
-      const tax = calculator.calculate({
-        userId: "user-id",
-        paySlip: 0,
-        entrepreneurRevenues: [
-          {
-            companyId: "company-id",
-            type: "services",
-            revenues: 100_000,
-          },
-        ],
+        revenueType: "services",
+        revenues: 100_000,
       });
 
       expect(tax.toPay).toBe(15_300);
     });
 
     test("Rule: commercial activities revenues have 51% allowance", () => {
-      const { calculator } = setup({
+      const tax = calculate({
         city: "Amb",
-      });
-
-      const tax = calculator.calculate({
-        userId: "user-id",
-        paySlip: 0,
-        entrepreneurRevenues: [
-          {
-            companyId: "company-id",
-            type: "commercial",
-            revenues: 100_000,
-          },
-        ],
+        revenueType: "commercial",
+        revenues: 100_000,
       });
 
       expect(tax.toPay).toBe(7_550);
@@ -74,37 +69,32 @@ describe("Behavior: company allowances", () => {
 
   describe("Context: in all other cities", () => {
     test("Rule: services revenues have 34% allowance", () => {
-      const { calculator } = setup({});
-      const tax = calculator.calculate({
-        userId: "user-id",
-        paySlip: 0,
-        entrepreneurRevenues: [
-          {
-            companyId: "company-id",
-            type: "services",
-            revenues: 100_000,
-          },
-        ],
+      const tax = calculate({
+        revenueType: "services",
+        revenues: 100_000,
       });
 
       expect(tax.toPay).toBe(12_600);
     });
 
     test("Rule: commercial activities revenues have 71% allowance", () => {
-      const { calculator } = setup({});
-      const tax = calculator.calculate({
-        userId: "user-id",
-        paySlip: 0,
-        entrepreneurRevenues: [
-          {
-            companyId: "company-id",
-            type: "commercial",
-            revenues: 100_000,
-          },
-        ],
+      const tax = calculate({
+        revenueType: "commercial",
+        revenues: 100_000,
       });
 
       expect(tax.toPay).toBe(2_620);
+    });
+
+    test("Rule: companies dont pay taxes the first year", () => {
+      const tax = calculate({
+        revenueType: "services",
+        revenues: 100_000,
+        currentYear: new Year(2025),
+        yearOfCreation: new Year(2024),
+      });
+
+      expect(tax.toPay).toBe(0);
     });
   });
 });

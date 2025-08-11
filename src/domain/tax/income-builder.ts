@@ -22,11 +22,7 @@ export class IncomeBuilder {
         );
       }
 
-      if (company.isFirstYear(this.currentYear)) {
-        return;
-      }
-
-      this.amount += declaration.revenuesAfterAllowance();
+      this.amount += declaration.revenuesAfterAllowance(this.currentYear);
     });
 
     return this;

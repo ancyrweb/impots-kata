@@ -42,4 +42,8 @@ export class Company {
   getCity() {
     return this.city;
   }
+
+  getYearOfCreation() {
+    return this.yearOfCreation;
+  }
 }

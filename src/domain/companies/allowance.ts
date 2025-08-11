@@ -1,10 +1,7 @@
-import { Percentage } from "../shared/percentage.js";
 import { CompanyRevenues } from "./company-revenues.js";
+import { Company } from "./company.js";
+import { Year } from "../shared/year.js";
 
-export class Allowance {
-  constructor(private readonly allowance: Percentage) {}
-
-  applyTo(revenues: CompanyRevenues) {
-    return this.allowance.complement().applyTo(revenues.asNumber());
-  }
+export interface Allowance {
+  applyTo(revenues: CompanyRevenues, company: Company, currentYear: Year): number;
 }
